@@ -1,14 +1,9 @@
 <?php
 namespace Ksr\SchemeCli;
 
+use Ksr\SchemeCli\App\Interpreter;
+
 require __DIR__.'/vendor/autoload.php';
 
-use Symfony\Component\Console\Application;
-
-use Ksr\SchemeCli\Command\Ping;
-
-$application = new Application();
-
-$application->add(new Ping());
-
-$application->run();
+$app = new Interpreter();
+$app->run();
