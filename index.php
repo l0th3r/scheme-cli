@@ -2,7 +2,6 @@
 namespace Ksr\SchemeCli;
 
 require __DIR__.'/vendor/autoload.php';
-require './src/commands/ping.php';
 
 use Symfony\Component\Console\Application;
 

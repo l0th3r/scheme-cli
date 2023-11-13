@@ -1,5 +1,18 @@
 {
-    "require": {
-        "symfony/console": "^6.3"
-    }
+    "name": "ksr/scheme-cli",
+    "description": "Scheme interpreter",
+    "type": "cli-app",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Ksr\\SchemeCli\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ksr",
+            "email": "ksr.outbound721@passmail.net"
+        }
+    ],
+    "require": {}
 }
