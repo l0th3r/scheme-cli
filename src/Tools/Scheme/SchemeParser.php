@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\SchemeCli\Tools;
+namespace Ksr\SchemeCli\Tools\Scheme;
 
 class SchemeParser
 {

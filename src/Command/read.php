@@ -1,7 +1,7 @@
 <?php
 namespace Ksr\SchemeCli\Command;
 
-use Ksr\SchemeCli\Tools\SchemeParser;
+use Ksr\SchemeCli\Tools\Scheme\SchemeParser;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
