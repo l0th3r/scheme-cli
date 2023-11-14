@@ -1,3 +1,2 @@
 Ksr\SchemeCli\Command
 ping
-pong

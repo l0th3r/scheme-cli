@@ -1,6 +1,7 @@
 <?php
 namespace Ksr\SchemeCli\App;
 
+use Error;
 use Exception;
 use Symfony\Component\Console\Application;
 
@@ -58,7 +59,15 @@ class Interpreter extends Application
             else
             {
                 $commandClass = $this->commandsNamespace . ucfirst($lContent);
-                $this->add(new $commandClass());
+
+                try
+                {
+                    $this->add(new $commandClass());
+                }
+                catch(Error $err)
+                {
+                    throw new Exception("Could not find command class '" . $commandClass . "' from file " . $this->filePath);
+                }
             }
 
             $lineIdx++;
