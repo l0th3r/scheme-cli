@@ -1,2 +1,2 @@
 Ksr\SchemeCli\Command
-ping
+read
