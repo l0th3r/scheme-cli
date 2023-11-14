@@ -2,7 +2,6 @@
 <?php
 namespace Ksr\SchemeCli;
 
-require __DIR__.'/ksr/intrepreter';
 require __DIR__.'/vendor/autoload.php';
 
 use Ksr\CLI\Interpreter;
