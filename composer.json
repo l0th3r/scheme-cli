@@ -16,5 +16,7 @@
             "email": "ksr.outbound721@passmail.net"
         }
     ],
-    "require": {}
+    "require": {
+        "symfony/console": "^5.4"
+    }
 }
