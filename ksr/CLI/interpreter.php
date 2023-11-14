@@ -32,9 +32,9 @@ class Interpreter extends Application
         {
             $this->run();
         }
-        catch (Exception $ex)
+        catch (Error $err)
         {
-            echo $this->getName() . " error: " . $ex->getMessage() . "\n";
+            echo $this->getName() . " " . $err. "\n";
             return;
         }
     }
