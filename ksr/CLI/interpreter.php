@@ -10,11 +10,12 @@ class Interpreter extends Application
     protected string $filePath = "";
     protected string $commandsNamespace = "";
 
-    public function __construct(string $appName, string $commandFilePath)
+    public function __construct(string $appName, string $version, string $commandFilePath)
     {
         parent::__construct();
 
         $this->setName($appName);
+        $this->setVersion($version);
         $this->filePath = $commandFilePath;
 
         try

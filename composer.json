@@ -1,6 +1,7 @@
 {
     "name": "ksr/scheme-cli",
     "description": "Scheme interpreter",
+    "version": "0.0.1",
     "type": "cli-app",
     "license": "MIT",
     "autoload": {
