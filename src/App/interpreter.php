@@ -30,7 +30,7 @@ class Interpreter extends Application
         // handle user errors
         try
         {
-            //$this->run();
+            $this->run();
         }
         catch (Exception $ex)
         {
@@ -58,7 +58,7 @@ class Interpreter extends Application
             else
             {
                 $commandClass = $this->commandsNamespace . ucfirst($lContent);
-                echo $commandClass . "\n";
+                $this->add(new $commandClass());
             }
 
             $lineIdx++;
