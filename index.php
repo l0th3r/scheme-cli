@@ -2,9 +2,10 @@
 <?php
 namespace Ksr\SchemeCli;
 
-use Ksr\SchemeCli\App\Interpreter;
-
+require __DIR__.'/ksr/intrepreter';
 require __DIR__.'/vendor/autoload.php';
+
+use Ksr\CLI\Interpreter;
 
 $app = new Interpreter('SchemeCLI', __DIR__ . '/src/Command/commands.txt');
 ?>

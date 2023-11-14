@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\Interpreter;
+namespace Ksr\CLI;
 
 use Error;
 use Exception;
