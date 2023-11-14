@@ -19,3 +19,5 @@ class Ping extends Command
         return Command::SUCCESS;
     }
 }
+
+?>
