@@ -25,7 +25,15 @@ class Read extends Command
 
         $response = SchemeParser::parse($declaration);
 
-        $output->writeln($declaration);
+        if(strlen($response->result) > 0)
+            $output->writeln($response->result."\n");
+
+        if($response->hasError)
+        {
+            $output->writeln("<fg=red>".$response->error."</>");
+            return Command::FAILURE;
+        }
+
         return Command::SUCCESS;
     }
 }

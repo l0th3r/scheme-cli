@@ -3,14 +3,30 @@ namespace Ksr\SchemeCli\Tools\Scheme;
 
 class SchemeParserResponse
 {
-    protected string $input;
+    public readonly string $input;
+    public string $rest;
+    public string $result;
 
-    protected $defineDeclarations = array();
+    public bool $hasError;
+    public string $error;
+
+    public $parsingStack = array();
 
     public function __construct($input)
     {
         $this->input = $input;
-        $defineDeclarations = [];
+        $this->rest = $input;
+        $this->result = "";
+
+        $this->hasError = false;
+        $this->error = "";
+        
+        $parsingStack = [];
+    }
+
+    public function addToParsingStack(string $element)
+    {
+        array_push($parsingStack, $element);
     }
 }
 ?>
