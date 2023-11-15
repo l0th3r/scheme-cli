@@ -33,7 +33,6 @@ class SchemeParser
 
     protected static function recursiveParsing(SchemeParserResponse &$response)
     {
-        throw new Exception("unknown identifier: dd");
     }
 
     protected static function valueConversion(string $value, mixed &$output) : bool
@@ -52,6 +51,40 @@ class SchemeParser
         }
 
         return true;
+    }
+
+    protected static function getNextClosingIndex(string $input) : bool
+    {
+        $parentOperations = array();
+        $parentOperations = [true, false];
+
+        return SchemeParser::isArrayAllTrue($parentOperations);
+
+        for($i = 0; $i < strlen($input); $i++)
+        {
+            $isParentOpen = $input[$i] == "(";
+            $isParentClosed = $input[$i] == ")";
+
+        }
+
+        // get integrity result
+        return false;
+    }
+
+    protected static function isArrayAllTrue(array $arr) : bool
+    {
+        foreach($arr as $item)
+        {
+            if($item == false)
+                return false;
+        }
+
+        return true;
+    }
+
+    protected static function formErrorMsg(string $rawError) : string
+    {
+        return "SchemeError: $rawError\n";
     }
 }
 ?>
