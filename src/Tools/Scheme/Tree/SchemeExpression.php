@@ -8,6 +8,7 @@ class SchemeExpression
     protected int $index = 0;
     protected string $expression = "";
     protected string $operator = "";
+    protected array $args = array();
 
     public function __construct($input)
     {
@@ -18,8 +19,12 @@ class SchemeExpression
     {
         $this->index = 0;
         $this->expression = $this->getExpressionFromIndex($this->index);
-        $this->operator = $this->getOperator();
-        echo $this->operator."\n";
+        $this->operator = $this->getRawOperator($this->index);
+        $this->getArgs($this->index, $this->args);
+        
+        echo "Expression: `".$this->expression."`\n";
+        echo "Operator: `".$this->operator."`\n";
+        echo "Args: "; print_r($this->args);
     }
 
     protected function getExpressionFromIndex(int &$index) : string
@@ -107,9 +112,46 @@ class SchemeExpression
         return true;
     }
 
-    protected function getOperator() : string
+    protected function getRawOperator(int &$index) : string
     {
-        return "O";
+        $index = 1;
+        $operator = "";
+
+        do
+        {
+            $c = $this->expression[$index++];
+            $operator = $operator.$c;
+        }
+        while(ctype_alpha($c) && $index < strlen($this->expression));
+
+        return $operator;
+    }
+
+    protected function getArgs(int &$index, array &$output) : void
+    {        
+        while($index < strlen($this->expression))
+        {
+            $c = $this->expression[$index];
+
+            if($c == '(')
+            {
+                array_push($output, $this->getExpressionFromIndex($index));
+            }
+            else if(ctype_alnum($c))
+            {
+                $arg = "";
+                while(ctype_alnum($c) && $index < strlen($this->expression))
+                {
+                    $c = $this->expression[$index++];
+
+                    $arg = $arg.$c;
+                }
+                $index--;
+                array_push($output, $arg);
+            }
+
+            $index++;
+        }
     }
 }
 ?>
