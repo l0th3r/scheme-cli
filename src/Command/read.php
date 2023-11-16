@@ -23,16 +23,16 @@ class Read extends Command
     {
         $declaration = $input->getArgument('declaration');
 
-        $response = SchemeParser::parse($declaration);
+        SchemeParser::parse($declaration);
 
-        if(strlen($response->result) > 0)
-            $output->writeln($response->result."\n");
+        // if(strlen($response->result) > 0)
+        //     $output->writeln($response->result."\n");
 
-        if($response->hasError)
-        {
-            $output->writeln("<fg=red>".$response->error."</>");
-            return Command::FAILURE;
-        }
+        // if($response->hasError)
+        // {
+        //     $output->writeln("<fg=red>".$response->error."</>");
+        //     return Command::FAILURE;
+        // }
 
         return Command::SUCCESS;
     }
