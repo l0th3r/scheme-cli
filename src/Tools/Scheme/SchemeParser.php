@@ -1,8 +1,6 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
-use Ksr\SchemeCli\Tools\Scheme\Tree\SchemeExpression;
-
 class SchemeParser
 {
     public static function parse(string $input)

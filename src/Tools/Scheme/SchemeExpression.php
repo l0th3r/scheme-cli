@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\SchemeCli\Tools\Scheme\Tree;
+namespace Ksr\SchemeCli\Tools\Scheme;
 
 class SchemeExpression
 {
