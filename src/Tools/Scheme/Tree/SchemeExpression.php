@@ -71,47 +71,6 @@ class SchemeExpression
         return $expression;
     }
 
-    protected function getNextElement(int &$index, string &$element) : bool
-    {
-        $startidx = $index;   
-        $c = $this->input[$index];
-        
-        while($c == ' ' || $c == '\n' || $c == '\r')
-        {            
-            $c = $this->input[$index];
-
-            $index++;
-
-            if($index == strlen($this->input))
-            {
-                $index = $startidx;
-                return false;
-            }
-        }
-
-        $index--;
-        $element = "";
-
-        while($c != ' ' && $c != '\n' && $c != '\r')
-        {            
-            $c = $this->input[$index];
-
-            if($c != ' ' && $c != '\n' && $c != '\r')
-                $element = $element.$c;
-
-            $index++;
-
-            if($index == strlen($this->input))
-            {
-                $index = $startidx;
-                return false;
-            }
-        }
-
-
-        return true;
-    }
-
     protected function getRawOperator(int &$index) : string
     {
         $index = 1;
