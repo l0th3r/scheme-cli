@@ -3,11 +3,11 @@ namespace Ksr\SchemeCli\Tools\Scheme\Operation;
 
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
 
-class SchemeAdd extends SchemeOperation
+class SchemeMultiply extends SchemeOperation
 {
     public function __construct()
     {
-        $this->keyword = '+';
+        $this->keyword = '*';
         $this->operandMin = 1;
         $this->operandMax = -1;
 
@@ -34,11 +34,11 @@ class SchemeAdd extends SchemeOperation
 
             if(str_contains($operand, '.'))
             {
-                $result += floatval($operand);
+                $result *= floatval($operand);
             }
             else
             {
-                $result += intval($operand);
+                $result *= intval($operand);
             }
         }
 
