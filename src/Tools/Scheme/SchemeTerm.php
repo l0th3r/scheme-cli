@@ -1,14 +1,20 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
-class SchemeTerm implements SchemeEvaluable
+class SchemeTerm extends SchemeEvaluable
 {
-    public readonly string $input;
-    public readonly SchemeTermType $type;
+    public readonly string $term;
 
-    protected string $term = "";
-
-    public function __construct(string $input, SchemeTermType $type)
+    /**
+     * Construct SchemeTerm instance
+     * 
+     * @param string $input the unparsed scheme term
+     * 
+     * @param SchemeArgType $type the type of the term (cannot be EXPRESSION or UNDETERMINED in this class)
+     *
+     * @author ksr
+     */
+    public function __construct(string $input, SchemeArgType $type)
     {
         $this->input = $input;
         $this->type = $type;
