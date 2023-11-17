@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\SchemeCli\Tools\Scheme;
+namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 /**
  * Used to define the type of argument for a scheme operation

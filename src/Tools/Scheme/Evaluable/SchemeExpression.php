@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\SchemeCli\Tools\Scheme;
+namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 use Exception;
 

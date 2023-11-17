@@ -1,6 +1,8 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
+
 /**
  * Define a scheme language parser and implementing the tools related to interpret the scheme language 
  *

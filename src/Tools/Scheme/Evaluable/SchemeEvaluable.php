@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\SchemeCli\Tools\Scheme;
+namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 /**
  * Define every scheme parsed element that can be recursively evaluated to a result

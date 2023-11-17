@@ -1,6 +1,8 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
+
 use Exception;
 
 /**

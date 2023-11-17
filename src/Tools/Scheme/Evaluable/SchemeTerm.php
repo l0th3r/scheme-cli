@@ -1,5 +1,5 @@
 <?php
-namespace Ksr\SchemeCli\Tools\Scheme;
+namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 /**
  * Define a scheme term which is also a evaluable scheme element
