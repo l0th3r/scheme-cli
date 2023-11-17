@@ -85,7 +85,8 @@ abstract class SchemeOperation
             $operand = $operands[$i]->input;
             $given = $operands[$i]->type;
 
-            if($expected != SchemeArgType::UNDETERMINED && SchemeOperation::isTypeExpected($expected->value, $given->value))
+            if (SchemeOperation::isTypeIncluded(SchemeArgType::UNDETERMINED->value, $expected) == false
+                && SchemeOperation::isTypeIncluded($expected->value, $given->value))
             {
                 throw new Exception("operand `".$operand."` is type `".$given->name."` when expected `".$expected->name."`");
             }
@@ -102,7 +103,7 @@ abstract class SchemeOperation
      * @author ksr
      * @return bool if the given SchemeArgType in included or equal to the expected SchemeArgType
      */ 
-    public static function isTypeExpected(int $expected, int $given) : bool
+    public static function isTypeIncluded(int $expected, int $given) : bool
     {
         return ($expected & $given) == $given;
     }
