@@ -3,6 +3,12 @@ namespace Ksr\SchemeCli\Tools\Scheme;
 
 use Exception;
 
+/**
+ * Define a scheme expression which is also a evaluable scheme element
+ *
+ * @license MIT License
+ * @author Ksr
+ */
 class SchemeExpression extends SchemeEvaluable
 {
     public bool $hasBeenBuild = false;

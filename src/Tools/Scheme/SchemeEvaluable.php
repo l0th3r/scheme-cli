@@ -1,6 +1,12 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
+/**
+ * Define every scheme parsed element that can be recursively evaluated to a result
+ *
+ * @license MIT License
+ * @author Ksr
+ */ 
 abstract class SchemeEvaluable
 {
     public string $input;

@@ -3,7 +3,13 @@ namespace Ksr\SchemeCli\Tools\Scheme;
 
 use Exception;
 
-abstract class SchemeOperator
+/**
+ * Define a scheme operation used to recursively obtain a result from arguments
+ *
+ * @license MIT License
+ * @author Ksr
+ */
+abstract class SchemeOperation
 {
     protected int $operandMin;
     protected int $operandMax;
@@ -36,7 +42,7 @@ abstract class SchemeOperator
             $expected = $this->operandTypes[$i];
             $given = $operands[$i]->type;
 
-            if($expected != SchemeArgType::NONE && $given != $expected)
+            if($expected != SchemeArgType::UNDETERMINED && $given != $expected)
             {
                 throw new Exception("operand `".$operand."` is type `".$given."` when expected `".$expected."`");
             }

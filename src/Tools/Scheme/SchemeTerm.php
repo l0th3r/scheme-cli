@@ -1,6 +1,12 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
+/**
+ * Define a scheme term which is also a evaluable scheme element
+ *
+ * @license MIT License
+ * @author Ksr
+ */
 class SchemeTerm extends SchemeEvaluable
 {
     public readonly string $term;
@@ -22,7 +28,6 @@ class SchemeTerm extends SchemeEvaluable
 
     public function build() : void
     {
-        // build term maybe depending on type
         $this->term = $this->input;
     }
 
