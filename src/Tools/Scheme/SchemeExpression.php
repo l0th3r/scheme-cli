@@ -134,12 +134,13 @@ class SchemeExpression implements SchemeEvaluable
             else if(ctype_alnum($c))
             {
                 $arg = "";
-                while(ctype_alnum($c) && $index < strlen($this->expression))
+                
+                do
                 {
-                    $c = $this->expression[$index++];
-
                     $arg = $arg.$c;
-                }
+                    $c = $this->expression[++$index];
+                } while(ctype_alnum($c) && $index < strlen($this->expression));
+                
                 $index--;
                 array_push($output, $arg);
             }
