@@ -34,7 +34,7 @@ class SchemeParser
 
         echo "Recursive print: ".$expression->print()."\n";
 
-        // $expression->evaluate();
+        $expression->evaluate();
 
         return "";
     }

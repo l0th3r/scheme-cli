@@ -1,4 +1,3 @@
-#!/usr/bin/env
 <?php
 namespace Ksr\SchemeCli;
 
