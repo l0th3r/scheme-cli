@@ -2,7 +2,7 @@
 namespace Ksr\SchemeCli\Tools\Scheme;
 
 /**
- * Define a scheme language parser and implementing the tools related to interpret the scheme language 
+ * Define a scheme language parser
  *
  * @link https://en.wikipedia.org/wiki/Scheme_(programming_language) Scheme language
  * @license MIT License
