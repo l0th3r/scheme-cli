@@ -85,10 +85,13 @@ abstract class SchemeOperation
             $operand = $operands[$i]->input;
             $given = $operands[$i]->type;
 
+            // echo "==".$expected."==";
+            // var_dump($given);
+
             if (SchemeOperation::isTypeIncluded(SchemeArgType::UNDETERMINED->value, $expected) == false
-                && SchemeOperation::isTypeIncluded($expected->value, $given->value))
+                && SchemeOperation::isTypeIncluded($expected, $given->value))
             {
-                throw new Exception("operand `".$operand."` is type `".$given->name."` when expected `".$expected->name."`");
+                throw new Exception("operand not expected: `".$operand."` of type `".$given->name);
             }
         }
     }

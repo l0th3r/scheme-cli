@@ -3,6 +3,8 @@ namespace Ksr\SchemeCli\Tools\Scheme;
 
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
+use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeAdd;
 use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeOperation;
 
 /**
@@ -31,12 +33,23 @@ class SchemeParser
         }
         $input = preg_replace("/\r|\n/", "", $input);
 
-        $expression = new SchemeExpression($input);
-        $expression->build();
+        // $expression = new SchemeExpression($input);
+        // $expression->build();
 
-        echo "Recursive print: ".$expression->print()."\n";
+        // echo "Recursive print: ".$expression->print()."\n";
 
         // $expression->evaluate();
+
+        $args = array(
+            new SchemeTerm("10", SchemeArgType::NUMERIC),
+            new SchemeTerm("10", SchemeArgType::NUMERIC)
+        );
+
+        $operator = new SchemeAdd("+");
+
+        $printval = $operator->operateEval($args, true);
+        print_r($args);
+        echo "result: ".$printval."\n";
 
         return "";
     }
