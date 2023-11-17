@@ -16,7 +16,7 @@ abstract class SchemeOperation
     protected string $keyword;
     protected int $operandMin;
     protected int $operandMax;
-    protected array $operandTypes = array();
+    protected array $operandTypes;
 
     /**
      * Check the settings of the operation
@@ -41,6 +41,11 @@ abstract class SchemeOperation
         {
             throw new Exception("operator ".get_class($this)." has a too few maximum operands, set it to -1 to allow a infinite maximum operands");
         }
+
+        if(count($this->operandTypes) <= 0)
+        {
+            throw new Exception("operator ".get_class($this)." has too few operand types. Has defined ".count($this->operandTypes)." need 1");
+        }
     }
 
     /**
@@ -64,17 +69,42 @@ abstract class SchemeOperation
             throw new Exception("too few operands");
         }
 
+        $otCount = count($this->operandTypes);
+
         for($i = 0; $i < count($operands); $i++)
         {
+            $opTypeIndex = 0;  
+            
+            if($i >= $otCount)
+                $opTypeIndex = $otCount - 1;
+            else
+                $opTypeIndex = $i;
+
+            $expected = $this->operandTypes[$opTypeIndex];
+
             $operand = $operands[$i]->input;
-            $expected = $this->operandTypes[$i];
             $given = $operands[$i]->type;
 
-            if($expected != SchemeArgType::UNDETERMINED && $given != $expected)
+            if($expected != SchemeArgType::UNDETERMINED && SchemeOperation::isTypeExpected($expected->value, $given->value))
             {
-                throw new Exception("operand `".$operand."` is type `".$given."` when expected `".$expected."`");
+                throw new Exception("operand `".$operand."` is type `".$given->name."` when expected `".$expected->name."`");
             }
         }
+    }
+
+    /**
+     * Bitwise check if given SchemeArgType is expected in the operation
+     * 
+     * @param int (bitwise) $expected is the SchemeArgType expected by the operation
+     * 
+     * @param int (bitwise) $given is the SchemeArgType given to the operation
+     *
+     * @author ksr
+     * @return bool if the given SchemeArgType in included or equal to the expected SchemeArgType
+     */ 
+    public static function isTypeExpected(int $expected, int $given) : bool
+    {
+        return ($expected & $given) == $given;
     }
 
     /**

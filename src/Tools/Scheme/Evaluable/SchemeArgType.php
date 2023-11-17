@@ -7,11 +7,11 @@ namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
  * @license MIT License
  * @author Ksr
  */ 
-enum SchemeArgType
+enum SchemeArgType : int
 {
-    case NUMERIC;
-    case EXPRESSION;
-    case STRING;
-    case UNDETERMINED; // Use as comparison only
+    case UNDETERMINED = 1;
+    case EXPRESSION = 2;
+    case STRING = 4;
+    case NUMERIC = 8;
 }
 ?>

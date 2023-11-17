@@ -1,7 +1,9 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
+use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeOperation;
 
 /**
  * Define a scheme language parser and implementing the tools related to interpret the scheme language 
@@ -34,7 +36,7 @@ class SchemeParser
 
         echo "Recursive print: ".$expression->print()."\n";
 
-        $expression->evaluate();
+        // $expression->evaluate();
 
         return "";
     }

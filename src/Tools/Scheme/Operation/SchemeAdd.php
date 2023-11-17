@@ -1,6 +1,8 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme\Operation;
 
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
+
 class SchemeAdd extends SchemeOperation
 {
     public function __construct(string $keyword)
@@ -8,6 +10,11 @@ class SchemeAdd extends SchemeOperation
         $this->keyword = $keyword;
         $this->operandMin = 1;
         $this->operandMax = -1;
+
+        $this->operandTypes = array
+        (
+            0 => SchemeArgType::NUMERIC->value,
+        );
 
         $this->checkSettings();
     }
