@@ -6,8 +6,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Ksr\\SchemeCli\\": "src/",
-            "Ksr\\CLI\\": "ksr/CLI/"
+            "Ksr\\SchemeCli\\": "src/"
         }
     },
     "authors": [

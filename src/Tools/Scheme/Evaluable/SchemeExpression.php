@@ -1,11 +1,16 @@
 <?php
-namespace Ksr\SchemeCli\Tools\Scheme;
+namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 use Exception;
 
-class SchemeExpression implements SchemeEvaluable
+/**
+ * Define a scheme expression which is also a evaluable scheme element
+ *
+ * @license MIT License
+ * @author Ksr
+ */
+class SchemeExpression extends SchemeEvaluable
 {
-    public readonly string $input;
     public bool $hasBeenBuild = false;
 
     protected int $index = 0;
@@ -14,9 +19,32 @@ class SchemeExpression implements SchemeEvaluable
     protected array $rawArgs = array();
     protected array $args = array();
 
+    /**
+     * Construct SchemeExpression instance
+     * 
+     * @param string $input the unparsed scheme expression
+     *
+     * @author ksr
+     */ 
     public function __construct(string $input)
     {
         $this->input = $input;
+        $this->type = SchemeArgType::EXPRESSION;
+    }
+
+    public function build() : void
+    {
+        $this->index = 0;
+        $this->expression = $this->getExpressionFromIndex($this->index);
+        $this->operator = $this->getOperator($this->index);
+        $this->getArgs($this->index, $this->rawArgs);
+        $this->parseArgs();
+
+        // echo "Expression: ".$this->expression."\n";
+        // echo "Operator: ".$this->operator."\n";
+        // echo "Args: "; print_r($this->rawArgs);
+
+        $this->hasBeenBuild = true;
     }
 
     public function evaluate() : string
@@ -51,17 +79,15 @@ class SchemeExpression implements SchemeEvaluable
         return $out;
     }
 
-    public function build() : void
-    {
-        $this->index = 0;
-        $this->expression = $this->getExpressionFromIndex($this->index);
-        $this->operator = $this->getRawOperator($this->index);
-        $this->getArgs($this->index, $this->rawArgs);
-        $this->parseArgs();
-
-        $this->hasBeenBuild = true;
-    }
-
+    /**
+     * Get the scheme expression from index
+     *
+     * @param int &$index index where to start to parse scheme expression
+     * as it is a reference, it will be incremented after the end of function
+     * 
+     * @author ksr
+     * @return string the found expression
+     */ 
     protected function getExpressionFromIndex(int &$index) : string
     {
         $validator = array();
@@ -92,7 +118,16 @@ class SchemeExpression implements SchemeEvaluable
         return $expression;
     }
 
-    protected function getRawOperator(int &$index) : string
+    /**
+     * Get the operator in scheme expression
+     *
+     * @param int &$index index where to start to parse scheme expression
+     * as it is a reference, the value of $index can be impacted
+     * 
+     * @author ksr
+     * @return string the found operator
+     */ 
+    protected function getOperator(int &$index) : string
     {
         $index = 1;
         $operator = "";
@@ -109,6 +144,18 @@ class SchemeExpression implements SchemeEvaluable
         return $operator;
     }
 
+    /**
+     * Get the arguments in scheme expression
+     *
+     * @param int &$index index where to start to parse scheme expression
+     * as it is a reference, the value of $index can be impacted
+     * 
+     * @param array &$output array to add each parsed scheme expression argument
+     * as it is a reference, the value of $output can be impacted 
+     * 
+     * @author ksr
+     * @return void
+     */ 
     protected function getArgs(int &$index, array &$output) : void
     {        
         while($index < strlen($this->expression))
@@ -137,6 +184,12 @@ class SchemeExpression implements SchemeEvaluable
         }
     }
 
+    /**
+     * Parse all the scheme expression's arguments
+     * 
+     * @author ksr
+     * @return void
+     */ 
     protected function parseArgs() : void
     {
         foreach($this->rawArgs as $arg)
@@ -150,18 +203,26 @@ class SchemeExpression implements SchemeEvaluable
         }
     }
 
-    protected function parseArg(string $arg) : mixed
+    /**
+     * Parse one scheme expression's argument
+     *
+     * @param string $arg raw argument to parse
+     * 
+     * @author ksr
+     * @return SchemeEvaluable generated with parsing the argument
+     */ 
+    protected function parseArg(string $arg) : SchemeEvaluable
     {
         if (is_numeric($arg))
         {
-            return new SchemeTerm($arg, SchemeTermType::NUMERIC);
+            return new SchemeTerm($arg, SchemeArgType::NUMERIC);
         }
         else if(str_starts_with($arg, "(") && str_ends_with($arg, ")"))
         {
             return new SchemeExpression($arg);
         }
         else
-            return new SchemeTerm($arg, SchemeTermType::STRING);
+            return new SchemeTerm($arg, SchemeArgType::STRING);
     }
 }
 ?>
