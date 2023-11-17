@@ -9,8 +9,6 @@ namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
  */
 class SchemeTerm extends SchemeEvaluable
 {
-    public readonly string $term;
-
     /**
      * Construct SchemeTerm instance
      * 
@@ -26,10 +24,7 @@ class SchemeTerm extends SchemeEvaluable
         $this->type = $type;
     }
 
-    public function build() : void
-    {
-        $this->term = $this->input;
-    }
+    public function build() : void {}
 
     public function evaluate() : string
     {

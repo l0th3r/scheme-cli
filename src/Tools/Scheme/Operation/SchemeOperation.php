@@ -13,7 +13,6 @@ use Exception;
  */
 abstract class SchemeOperation
 {
-    protected string $keyword;
     protected int $operandMin;
     protected int $operandMax;
     protected array $operandTypes;
@@ -27,11 +26,6 @@ abstract class SchemeOperation
      */     
     protected function checkSettings()
     {
-        if(strlen($this->keyword) <= 0)
-        {
-            throw new Exception("keyword ".$this->keyword." is invalid. From class ".get_class($this)." has invalid keyword");
-        }
-
         if($this->operandMin < 0)
         {
             throw new Exception("operator ".get_class($this)." has a too few minimum operands");
@@ -85,11 +79,8 @@ abstract class SchemeOperation
             $operand = $operands[$i]->input;
             $given = $operands[$i]->type;
 
-            // echo "==".$expected."==";
-            // var_dump($given);
-
-            if (SchemeOperation::isTypeIncluded(SchemeArgType::UNDETERMINED->value, $expected) == false
-                && SchemeOperation::isTypeIncluded($expected, $given->value))
+            if (!SchemeOperation::isTypeIncluded(SchemeArgType::UNDETERMINED->value, $expected)
+                && !SchemeOperation::isTypeIncluded($expected, $given->value))
             {
                 throw new Exception("operand not expected: `".$operand."` of type `".$given->name);
             }

@@ -45,10 +45,9 @@ class SchemeParser
             new SchemeTerm("10", SchemeArgType::NUMERIC)
         );
 
-        $operator = new SchemeAdd("+");
+        $operation = new SchemeAdd("-");
 
-        $printval = $operator->operateEval($args, true);
-        print_r($args);
+        $printval = $operation->operateEval($args, true);
         echo "result: ".$printval."\n";
 
         return "";

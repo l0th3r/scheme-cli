@@ -7,13 +7,12 @@ class SchemeAdd extends SchemeOperation
 {
     public function __construct(string $keyword)
     {
-        $this->keyword = $keyword;
         $this->operandMin = 1;
         $this->operandMax = -1;
 
         $this->operandTypes = array
         (
-            0 => SchemeArgType::NUMERIC->value,
+            SchemeArgType::NUMERIC->value
         );
 
         $this->checkSettings();
@@ -28,8 +27,10 @@ class SchemeAdd extends SchemeOperation
             $this->checkIntegrity($operands);
         }
 
-        foreach($operands as $operand)
+        foreach($operands as $term)
         {
+            $operand = $term->input;
+
             if(str_contains($operand, '.'))
             {
                 $result += floatval($operand);
