@@ -15,6 +15,10 @@ class SchemeParser
         $expression = new SchemeExpression($input);
         $expression->build();
 
+        echo "Recursive print: ".$expression->print()."\n";
+
+        // $expression->evaluate();
+
         return "";
     }
 

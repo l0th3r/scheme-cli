@@ -37,9 +37,13 @@ class SchemeExpression implements SchemeEvaluable
 
         $out = $out.$this->operator." ";
         
-        foreach($this->rawArgs as $arg)
+
+        for($i = 0; $i < count($this->args); $i++)
         {
-            $out = $out.$arg->print()." ";
+            $out = $out.$this->args[$i]->print();
+
+            if($i + 1 < count($this->args))
+                $out = $out." ";
         }
 
         $out = $out.")";
@@ -53,13 +57,7 @@ class SchemeExpression implements SchemeEvaluable
         $this->expression = $this->getExpressionFromIndex($this->index);
         $this->operator = $this->getRawOperator($this->index);
         $this->getArgs($this->index, $this->rawArgs);
-
-        echo "Expression: `".$this->expression."`\n";
-        echo "Operator: `".$this->operator."`\n";
-        echo "Raw Args: "; print_r($this->rawArgs);
-
         $this->parseArgs();
-        //echo "Args: "; print_r($this->args);
 
         $this->hasBeenBuild = true;
     }
@@ -81,18 +79,6 @@ class SchemeExpression implements SchemeEvaluable
             else if($c == ')')
             {
                 array_pop($validator);
-            }
-
-            $dump = "";
-
-            foreach($validator as $item)
-            {
-                if ($item == true)
-                    $item = "true";
-                else
-                    $item = "false";
-
-                $dump = $dump.$item." ";
             }
 
             $expression = $expression.$c;
@@ -117,6 +103,8 @@ class SchemeExpression implements SchemeEvaluable
             $operator = $operator.$c;
         }
         while(ctype_alpha($c) && $index < strlen($this->expression));
+
+        //TODO FIX SPACE BEFORE OPERATOR
 
         return $operator;
     }
