@@ -13,7 +13,8 @@ use Exception;
  */
 abstract class SchemeOperation
 {
-    protected string $keyword;
+    public string $keyword;
+    
     protected int $operandMin;
     protected int $operandMax;
     protected array $operandTypes;
@@ -25,7 +26,7 @@ abstract class SchemeOperation
      * @author ksr
      * @return void
      */     
-    protected function checkSettings()
+    public function checkSettings()
     {
         if(strlen($this->keyword) <= 0)
         {
