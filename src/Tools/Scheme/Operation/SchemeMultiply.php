@@ -21,7 +21,7 @@ class SchemeMultiply extends SchemeOperation
 
     public function operateEval(array $operands, bool $checkIntegrity = false): string
     {
-        $result = 0;
+        $result = 1;
 
         if($checkIntegrity == true)
         {
