@@ -1,10 +1,11 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme;
 
+use Exception;
 use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeOperation;
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
 
 // TODO FIX THE NEED TO REQUIRE TO SEARCH AMONG CLASSES
-require __DIR__.'/Operation/SchemeOperation.php';
 require __DIR__.'/Operation/SchemeAdd.php';
 require __DIR__.'/Operation/SchemeMultiply.php';
 
@@ -17,17 +18,123 @@ require __DIR__.'/Operation/SchemeMultiply.php';
  */
 final class SchemeParser
 {
+    public string $input;
+
+    protected array $parsedExpressions = array();
+    protected array $parsedTerms = array();
+    protected array $evaluatedExpressions = array();
+
     protected array $classes = array();
     protected array $operations = array();
 
-    public function __construct()
+    protected bool $hasBeenParsed = false;
+
+    public function __construct(string $input)
     {
         $this->gatherClasses();
         $this->registerOperations();
+        $this->input = $input;
+    }
 
-        $this->tryGetOperation("+", $op);
+    /**
+     * Parse the input and check integrity of scheme expressions
+     * 
+     * @throws Exception when parsing error is met BEFORE interpretation
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function parse() : void
+    {
+        if($this->hasBeenParsed)
+        {
+            throw new Exception("attempt to parse an already parsed input");
+        }
 
-        var_dump($op);
+        $this->extractExpressions();
+
+        foreach($this->parsedExpressions as $ex)
+        {
+            $term = SchemeExpression::parseTerm($ex);
+            $term->build();
+
+            array_push($this->parsedTerms, $term);
+        }
+
+        $this->hasBeenParsed = true;
+    }
+
+    /**
+     * Recursively evaluate the parsed input
+     * 
+     * @throws Exception when an evaluation error is met
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function evaluate() : string
+    {
+        if($this->hasBeenParsed == false)
+        {
+            throw new Exception("attempt to evaluate an input that have not been parsed");
+        }
+
+        $evaluation = "";
+
+        foreach($this->parsedTerms as $term)
+        {
+            $termEval = $term->evaluate();
+            $evaluation = $evaluation."\n".$termEval;
+        }
+
+        return $evaluation."\n";
+    }
+
+    /**
+     * Parse the input and fills $parsedExpressions array with found scheme expressions in the $input
+     * 
+     * @throws Exception if the parsing is not possible
+     * 
+     * @return void
+     * @author Ksr
+     */
+    protected function extractExpressions() : void
+    {
+        $index = 0;
+        $char = '';
+        $tempstr = "";
+
+        while($index < strlen($this->input))
+        {
+            $char = $this->input[$index];
+
+            if($char == '(')
+            {
+                $expression = SchemeExpression::getExpressionFromIndex($this->input, $index);
+                array_push($this->parsedExpressions, $expression);
+                $index++;
+            }
+            else if(ctype_space($char) || $char == "\n" || $char == "\r")
+            {
+                if(strlen($tempstr) > 0)
+                {
+                    array_push($this->parsedExpressions, $tempstr);
+                    $tempstr = "";
+                }
+
+                $index++;
+            }
+            else
+            {
+                $tempstr = $tempstr.$char;
+                $index++;
+            }
+        }
+
+        if(strlen($tempstr) > 0)
+        {
+            array_push($this->parsedExpressions, $tempstr);
+        }
     }
 
     /**

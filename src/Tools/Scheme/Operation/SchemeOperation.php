@@ -45,7 +45,7 @@ abstract class SchemeOperation
 
         if(count($this->operandTypes) <= 0)
         {
-            throw new Exception("operator ".get_class($this)." has too few operand types. Has defined ".count($this->operandTypes)." need 1");
+            throw new Exception("operator ".get_class($this)." has too few operand types. Has defined ".count($this->operandTypes)." need at least 1");
         }
     }
 
