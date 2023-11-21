@@ -2,6 +2,7 @@
 namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 use Exception;
+use Ksr\SchemeCli\Tools\Scheme\SchemeParser;
 
 /**
  * Define a scheme expression which is also a evaluable scheme element
@@ -39,13 +40,29 @@ class SchemeExpression extends SchemeEvaluable
         $this->hasBeenBuild = true;
     }
 
-    public function evaluate() : string
+    public function evaluate() : SchemeTerm
     {
         if($this->hasBeenBuild == false)
+        {
             throw new Exception("Cannot evaluate unbuild expression");
+        }
 
-        // TODO EVALUATION OF EXPRESSION
-        return "EVAL";
+        if(SchemeParser::$context->tryGetOperation($this->operator, $operation))
+        {
+            $evaluatedArgs = array();
+
+            foreach($this->args as $arg)
+            {
+                $argEval = $arg->evaluate();
+                array_push($evaluatedArgs, $argEval);
+            }
+
+            return $operation->operateEval($evaluatedArgs, true);
+        }
+        else
+        {
+            throw new Exception("Unknown identifier: ".$this->operator);
+        }
     }
 
     public function print() : string
@@ -230,7 +247,7 @@ class SchemeExpression extends SchemeEvaluable
         }
         else
         {
-            throw new Exception("unknown identifier: ".$arg);
+            throw new Exception("Unknown identifier: ".$arg);
         }
 
         // TODO add check of define function aliases

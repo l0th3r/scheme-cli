@@ -26,9 +26,9 @@ class SchemeTerm extends SchemeEvaluable
 
     public function build() : void {}
 
-    public function evaluate() : string
+    public function evaluate() : SchemeTerm
     {
-        return $this->input;
+        return $this;
     }
 
     public function print() : string

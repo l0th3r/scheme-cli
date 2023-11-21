@@ -28,7 +28,7 @@ abstract class SchemeEvaluable
      * @author ksr
      * @return string result of the evaluation
      */ 
-    public abstract function evaluate() : string;
+    public abstract function evaluate() : SchemeTerm;
 
     /**
      * Recursively get scheme expression or term
@@ -38,5 +38,13 @@ abstract class SchemeEvaluable
      * @return string scheme expression
      */ 
     public abstract function print() : string;
+
+    /**
+     * Override of the string conversion
+     */
+    public function __toString(): string
+    {
+        return $this->print();
+    }
 }
 ?>

@@ -2,6 +2,7 @@
 namespace Ksr\SchemeCli\Tools\Scheme\Operation;
 
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 
 class SchemeAdd extends SchemeOperation
 {
@@ -19,7 +20,7 @@ class SchemeAdd extends SchemeOperation
         $this->checkSettings();
     }
 
-    public function operateEval(array $operands, bool $checkIntegrity = false): string
+    public function operateEval(array $operands, bool $checkIntegrity = false): SchemeTerm
     {
         $result = 0;
 
@@ -42,7 +43,7 @@ class SchemeAdd extends SchemeOperation
             }
         }
 
-        return strval($result);
+        return new SchemeTerm(strval($result), SchemeArgType::NUMERIC);
     }
 }
 ?>

@@ -6,8 +6,8 @@ use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeOperation;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
 
 // TODO FIX THE NEED TO REQUIRE TO SEARCH AMONG CLASSES
-require __DIR__.'/Operation/SchemeAdd.php';
-require __DIR__.'/Operation/SchemeMultiply.php';
+require_once __DIR__.'/Operation/SchemeAdd.php';
+require_once __DIR__.'/Operation/SchemeMultiply.php';
 
 /**
  * Scheme language parser, provide a scheme interpretation context
@@ -20,20 +20,20 @@ final class SchemeParser
 {
     public string $input;
 
+    public static SchemeParser $context;
+
     protected array $parsedExpressions = array();
     protected array $parsedTerms = array();
     protected array $evaluatedExpressions = array();
 
-    protected array $classes = array();
     protected array $operations = array();
 
     protected bool $hasBeenParsed = false;
 
     public function __construct(string $input)
     {
-        $this->gatherClasses();
-        $this->registerOperations();
         $this->input = $input;
+        $this->registerOperations();
     }
 
     /**
@@ -50,6 +50,8 @@ final class SchemeParser
         {
             throw new Exception("attempt to parse an already parsed input");
         }
+
+        SchemeParser::$context = $this;
 
         $this->extractExpressions();
 
@@ -78,6 +80,8 @@ final class SchemeParser
         {
             throw new Exception("attempt to evaluate an input that have not been parsed");
         }
+
+        SchemeParser::$context = $this;
 
         $evaluation = "";
 
@@ -145,7 +149,10 @@ final class SchemeParser
      */
     protected function registerOperations() : void
     {
-        foreach($this->classes as $class)
+        $classes = array();
+        $this->gatherClasses($classes);
+        
+        foreach($classes as $class)
         {
             $op = new $class();
             $op->checkSettings();
@@ -154,18 +161,20 @@ final class SchemeParser
     }
 
     /**
-     * Fill the $classes array with available scheme operations classes find in project
+     * Fill the $output array with available scheme operations classes find in project using reflection
+     * 
+     * @param array &$output to push found classes
      * 
      * @return void
      * @author Ksr
      */
-    protected function gatherClasses() : void
-    {        
+    protected function gatherClasses(array &$output) : void
+    {
         foreach(get_declared_classes() as $class)
         {
             if(is_subclass_of($class, __NAMESPACE__."\\Operation\\SchemeOperation"))
             {
-                array_push($this->classes, $class);
+                array_push($output, $class);
             }
         }
     }
@@ -179,7 +188,7 @@ final class SchemeParser
      * @return bool true if the operation was found
      * @author Ksr
      */
-    protected function tryGetOperation(string $keyword, ?SchemeOperation &$operation) : bool
+    public function tryGetOperation(string $keyword, ?SchemeOperation &$operation) : bool
     {
         $hasFoundOperation = false;
 
