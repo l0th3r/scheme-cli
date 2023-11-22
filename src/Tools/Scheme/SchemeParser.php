@@ -2,8 +2,10 @@
 namespace Ksr\SchemeCli\Tools\Scheme;
 
 use Exception;
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
 use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeOperation;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 
 // TODO FIX THE NEED TO REQUIRE TO SEARCH AMONG CLASSES
 require_once __DIR__.'/Operation/SchemeAdd.php';
@@ -19,51 +21,55 @@ require_once __DIR__.'/Operation/SchemeMultiply.php';
 final class SchemeParser
 {
     public string $input;
-
     public static SchemeParser $context;
+
+    public bool $returnErrors;
+    public bool $returnCallstack;
 
     protected array $parsedExpressions = array();
     protected array $parsedTerms = array();
     protected array $evaluatedExpressions = array();
-
     protected array $operations = array();
-
     protected bool $hasBeenParsed = false;
 
-    public function __construct(string $input)
+    public function __construct(string $input, bool $returnErrors = true, bool $returnCallstack = true)
     {
         $this->input = $input;
+        $this->returnErrors = $returnErrors;
+        $this->returnCallstack = $returnCallstack;
+
         $this->registerOperations();
     }
 
     /**
      * Parse the input and check integrity of scheme expressions
      * 
-     * @throws Exception when parsing error is met BEFORE interpretation
-     * 
-     * @return void
+     * @return string parsing and evaluation result
      * @author Ksr
      */
-    public function parse() : void
+    public function parse() : string
     {
-        if($this->hasBeenParsed)
-        {
-            throw new Exception("attempt to parse an already parsed input");
-        }
-
         SchemeParser::$context = $this;
 
-        $this->extractExpressions();
-
-        foreach($this->parsedExpressions as $ex)
+        try
         {
-            $term = SchemeExpression::parseTerm($ex);
-            $term->build();
+            $this->extractExpressions();
 
-            array_push($this->parsedTerms, $term);
+            foreach($this->parsedExpressions as $ex)
+            {
+                $term = SchemeExpression::parseTerm($ex);
+                $term->build();
+    
+                array_push($this->parsedTerms, $term);
+            }
+        }
+        catch (Exception $ex)
+        {
+            $log = new SchemeTerm($this->formErrorLog("Scheme parsing error", $ex->getMessage()), SchemeArgType::STRING);
+            array_push($this->parsedTerms, $log);
         }
 
-        $this->hasBeenParsed = true;
+        return $this->evaluate();
     }
 
     /**
@@ -71,27 +77,29 @@ final class SchemeParser
      * 
      * @throws Exception when an evaluation error is met
      * 
-     * @return void
+     * @return string evaluation result
      * @author Ksr
      */
-    public function evaluate() : string
+    protected function evaluate() : string
     {
-        if($this->hasBeenParsed == false)
-        {
-            throw new Exception("attempt to evaluate an input that have not been parsed");
-        }
-
         SchemeParser::$context = $this;
 
         $evaluation = "";
 
         foreach($this->parsedTerms as $term)
         {
-            $termEval = $term->evaluate();
-            $evaluation = $evaluation."\n".$termEval;
+            try
+            {
+                $termEval = $term->evaluate();
+                $evaluation = $evaluation."\n\n".$termEval;
+            }
+            catch (Exception $ex)
+            {
+                $evaluation = $evaluation."\n\n".$this->formErrorLog("Scheme error", $ex->getMessage());
+            }
         }
 
-        return $evaluation."\n";
+        return $evaluation;
     }
 
     /**
@@ -202,6 +210,25 @@ final class SchemeParser
 
         $operation = NULL;
         return $hasFoundOperation;
+    }
+
+
+    protected function formErrorLog(string $prefix, string $err) : string
+    {
+        if($this->returnErrors == false)
+        {
+            return "";
+        }
+
+        $log = $prefix." -> ".$err;
+
+        if($this->returnCallstack)
+        {
+            $log = $log."\n----- Stack -----";
+            // TODO add callstack
+        }
+
+        return "<error>".$log."</error>";
     }
 }
 ?>

@@ -127,6 +127,11 @@ class SchemeExpression extends SchemeEvaluable
             $index++;
         }
 
+        if($index == strlen($input))
+        {
+            throw new Exception("unexpected end of file");
+        }
+
         return $expression;
     }
 
