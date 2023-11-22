@@ -23,8 +23,11 @@ class Read extends Command
     {
         $declaration = $input->getArgument('declaration');
 
-        $parser = new SchemeParser();
+        $parser = new SchemeParser($declaration);
+        $parser->parse();
 
+        echo $parser->evaluate();
+        
         return Command::SUCCESS;
     }
 }

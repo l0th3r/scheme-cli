@@ -2,6 +2,7 @@
 namespace Ksr\SchemeCli\Tools\Scheme\Operation;
 
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
+use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 
 use Exception;
 
@@ -45,7 +46,7 @@ abstract class SchemeOperation
 
         if(count($this->operandTypes) <= 0)
         {
-            throw new Exception("operator ".get_class($this)." has too few operand types. Has defined ".count($this->operandTypes)." need 1");
+            throw new Exception("operator ".get_class($this)." has too few operand types. Has defined ".count($this->operandTypes)." need at least 1");
         }
     }
 
@@ -118,8 +119,8 @@ abstract class SchemeOperation
      * 
      * @throws Exception if something goes wrong with the operation
      * @author ksr
-     * @return string result of the operation
+     * @return SchemeTerm new term resulting of the operation
      */ 
-    public abstract function operateEval(array $operands, bool $checkIntegrity = false) : string;
+    public abstract function operateEval(array $operands, bool $checkIntegrity = false) : SchemeTerm;
 }
 ?>
