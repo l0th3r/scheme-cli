@@ -1,6 +1,8 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme\Operation;
 
+use Exception;
+
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeArgType;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 
@@ -31,6 +33,11 @@ class SchemeDivide extends SchemeOperation
 
         $operand1 = SchemeOperation::parseNumericValue($operands[0]->input);
         $operand2 = SchemeOperation::parseNumericValue($operands[1]->input);
+        
+        if(abs($operand2) == 0)
+        {
+            throw new Exception("attempt to divide by ".strval($operand2));
+        }
 
         $result = $operand1 / $operand2;
 
