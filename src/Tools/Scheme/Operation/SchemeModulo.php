@@ -29,26 +29,8 @@ class SchemeModulo extends SchemeOperation
             $this->checkIntegrity($operands);
         }
 
-        $operand1 = $operands[0]->input;
-        $operand2 = $operands[1]->input;
-
-        if(str_contains($operand1, '.'))
-        {
-            $operand1 = floatval($operand1);
-        }
-        else
-        {
-            $operand1 = intval($operand1);
-        }
-
-        if(str_contains($operand2, '.'))
-        {
-            $operand2 = floatval($operand2);
-        }
-        else
-        {
-            $operand2 = intval($operand2);
-        }
+        $operand1 = SchemeOperation::parseNumericValue($operands[0]->input);
+        $operand2 = SchemeOperation::parseNumericValue($operands[1]->input);
 
         $result = $operand1 % $operand2;
 
