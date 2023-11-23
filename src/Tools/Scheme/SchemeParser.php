@@ -11,6 +11,7 @@ use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 require_once __DIR__.'/Operation/SchemeAdd.php';
 require_once __DIR__.'/Operation/SchemeMultiply.php';
 require_once __DIR__.'/Operation/SchemeDivide.php';
+require_once __DIR__.'/Operation/SchemeSubstract.php';
 
 /**
  * Scheme language parser, provide a scheme interpretation context
