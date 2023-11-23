@@ -34,14 +34,7 @@ class SchemeSubstract extends SchemeOperation
             $operand = $operands[0]->input;
             $value = 1;
             
-            if(str_contains($operand, '.'))
-            {
-                $value = floatval($operand);
-            }
-            else
-            {
-                $value = intval($operand);
-            }
+            $value = SchemeOperation::parseNumericValue($operand);
 
             $result = -$value;
         }
@@ -53,22 +46,11 @@ class SchemeSubstract extends SchemeOperation
 
                 if($i == 0)
                 {
-                    if(str_contains($operand, '.'))
-                    {
-                        $result = floatval($operand);
-                    }
-                    else
-                    {
-                        $result = intval($operand);
-                    }
-                }
-                else if(str_contains($operand, '.'))
-                {
-                    $result -= floatval($operand);
+                    $result = SchemeOperation::parseNumericValue($operand);
                 }
                 else
                 {
-                    $result -= intval($operand);
+                    $result -= SchemeOperation::parseNumericValue($operand);
                 }
             }
         }

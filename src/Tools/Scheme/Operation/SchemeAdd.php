@@ -31,16 +31,7 @@ class SchemeAdd extends SchemeOperation
 
         foreach($operands as $term)
         {
-            $operand = $term->input;
-
-            if(str_contains($operand, '.'))
-            {
-                $result += floatval($operand);
-            }
-            else
-            {
-                $result += intval($operand);
-            }
+            $result += SchemeOperation::parseNumericValue($term->input);
         }
 
         return new SchemeTerm(strval($result), SchemeArgType::NUMERIC);

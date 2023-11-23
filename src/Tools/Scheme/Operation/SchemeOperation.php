@@ -112,6 +112,26 @@ abstract class SchemeOperation
     }
 
     /**
+     * Parse a numeric value to int or float depending on the dot
+     * 
+     * @param string $input valut to parse. Will not check it's integrity
+     * 
+     * @author Ksr
+     * @return mixed int or float parsed value
+     */
+    protected static function parseNumericValue(string $input) : mixed
+    {
+        if(str_contains($input, '.'))
+        {
+            return floatval($input);
+        }
+        else
+        {
+            return intval($input);
+        }
+    }
+
+    /**
      * Execute the operation
      * 
      * @param array $operands (type SchemeEvaluable class) operands to evaluate
