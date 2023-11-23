@@ -63,12 +63,12 @@ abstract class SchemeOperation
     {
         if($this->operandMax > 0 && count($operands) > $this->operandMax)
         {
-            throw new Exception("too much operands");
+            throw new Exception("too much operands for \"".$this->keyword."\" operation");
         }
         
         if(count($operands) < $this->operandMin)
         {
-            throw new Exception("too few operands");
+            throw new Exception("too few operands for \"".$this->keyword."\" operation");
         }
 
         $otCount = count($this->operandTypes);
@@ -87,10 +87,11 @@ abstract class SchemeOperation
             $operand = $operands[$i]->input;
             $given = $operands[$i]->type;
 
+            // Check if the expected type is undetermined or if the type of the operand is expected
             if (!SchemeOperation::isTypeIncluded(SchemeArgType::UNDETERMINED->value, $expected)
                 && !SchemeOperation::isTypeIncluded($expected, $given->value))
             {
-                throw new Exception("operand not expected: `".$operand."` of type `".$given->name);
+                throw new Exception("operand \"".$operand."\" of type \"".$given->name."\" is not expected for operation \"".$this->keyword."\"");
             }
         }
     }
