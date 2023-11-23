@@ -10,6 +10,9 @@ use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 // TODO FIX THE NEED TO REQUIRE TO SEARCH AMONG CLASSES
 require_once __DIR__.'/Operation/SchemeAdd.php';
 require_once __DIR__.'/Operation/SchemeMultiply.php';
+require_once __DIR__.'/Operation/SchemeDivide.php';
+require_once __DIR__.'/Operation/SchemeSubstract.php';
+require_once __DIR__.'/Operation/SchemeModulo.php';
 
 /**
  * Scheme language parser, provide a scheme interpretation context
@@ -67,7 +70,11 @@ final class SchemeParser
         }
         catch (Exception $ex)
         {
-            $log = new SchemeTerm($this->formErrorLog("Scheme parsing error", $ex->getMessage()), SchemeArgType::STRING);
+            $log = new SchemeTerm(
+                $this->createErrorLog("Scheme parsing error", "Parsing", $ex->getMessage()),
+                SchemeArgType::STRING
+            );
+            
             array_push($this->parsedTerms, $log);
         }
 
@@ -93,11 +100,15 @@ final class SchemeParser
             try
             {
                 $termEval = $term->evaluate();
-                $evaluation = $evaluation."\n\n".$termEval;
+                $evaluation = $evaluation."\n".$termEval;
             }
             catch (Exception $ex)
             {
-                $evaluation = $evaluation."\n\n".$this->formErrorLog("Scheme error", $ex->getMessage());
+                $evaluation = $evaluation."\n\n".$this->createErrorLog(
+                    "Scheme error",
+                    "Evaluation",
+                    $ex->getMessage()
+                );
             }
         }
 
@@ -239,15 +250,16 @@ final class SchemeParser
     }
 
     /**
-     * Add a log to the callstack
+     * Create error log from raw error or exception message
      * 
      * @param string $prefix indication on the type of error
+     * @param string $stackName name of the stack
      * @param string $err content of the error log
      * 
      * @return string formatted error log
      * @author Ksr
      */
-    protected function formErrorLog(string $prefix, string $err) : string
+    protected function createErrorLog(string $prefix, string $stackName, string $err) : string
     {
         if($this->returnErrors == false)
         {
@@ -258,18 +270,18 @@ final class SchemeParser
 
         if($this->returnCallstack)
         {
-            $log = $log."\n----- Parsing Stack -----";
+            $log = $log."\n----- ".$stackName." Stack -----";
             
             $idx = count($this->callstack) - 1;
             
             while($idx >= 0)
             {
-                $log = $log."\n".($idx + 1).": ".$this->callstack[$idx];
+                $log = $log."\n".$idx.": ".$this->callstack[$idx];
                 $idx--;
             }
         }
 
-        return "<error>".$log."</error>";
+        return "<error>".$log."</error>\n";
     }
 }
 ?>

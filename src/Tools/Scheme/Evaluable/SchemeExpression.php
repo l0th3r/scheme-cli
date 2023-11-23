@@ -160,14 +160,19 @@ class SchemeExpression extends SchemeEvaluable
         $index = 1;
         $operator = "";
 
+        while(!ctype_graph($expression[$index]) && $index < strlen($expression))
+        {
+            $index++;
+        }
+
+        $c = '';
+
         do
         {
-            $c = $expression[$index++];
+            $c = $expression[$index];
             $operator = $operator.$c;
-        }
-        while(ctype_alpha($c) && $index < strlen($expression));
-
-        //TODO FIX SPACE BEFORE OPERATOR
+            $index++;
+        } while(ctype_graph($expression[$index]) && $expression[$index] != ')' && $index < strlen($expression));
 
         return $operator;
     }
@@ -186,7 +191,9 @@ class SchemeExpression extends SchemeEvaluable
      * @return void
      */ 
     public static function getArgs(string $expression, int &$index, array &$output) : void
-    {        
+    {
+        $arg = "";
+
         while($index < strlen($expression))
         {
             $c = $expression[$index];
@@ -195,21 +202,25 @@ class SchemeExpression extends SchemeEvaluable
             {
                 array_push($output, SchemeExpression::getExpressionFromIndex($expression, $index));
             }
-            else if(ctype_alnum($c))
+            else if(ctype_graph($c) && $c != ')')
             {
-                $arg = "";
-                
-                do
+                $arg = $arg.$c;
+            }
+            else
+            {
+                if(strlen($arg) > 0)
                 {
-                    $arg = $arg.$c;
-                    $c = $expression[++$index];
-                } while(ctype_alnum($c) && $index < strlen($expression));
-                
-                $index--;
-                array_push($output, $arg);
+                    array_push($output, $arg);
+                    $arg = "";
+                }
             }
 
             $index++;
+        }
+
+        if(strlen($arg) > 0)
+        {
+            array_push($output, $arg);
         }
     }
 
