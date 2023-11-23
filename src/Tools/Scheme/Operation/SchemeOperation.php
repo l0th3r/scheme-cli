@@ -91,7 +91,7 @@ abstract class SchemeOperation
             if (!SchemeOperation::isTypeIncluded(SchemeArgType::UNDETERMINED->value, $expected)
                 && !SchemeOperation::isTypeIncluded($expected, $given->value))
             {
-                throw new Exception("operand \"".$operand."\" of type \"".$given->name."\" is not expected for operation \"".$this->keyword."\"");
+                throw new Exception("operand \"".$operand."\" of type \"".$given->name."\" and is not expected for operation \"".$this->keyword."\"");
             }
         }
     }
