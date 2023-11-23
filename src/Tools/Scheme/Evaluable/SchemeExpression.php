@@ -31,21 +31,30 @@ class SchemeExpression extends SchemeEvaluable
     public function build() : void
     {
         SchemeParser::$context->addLogToCallstack($this->input);
+        SchemeParser::$context->createDebugLog("Building expression: ".$this->input, true);
 
         $this->index = 0;
         $this->expression = SchemeExpression::getExpressionFromIndex($this->input, $this->index);
         $this->operator = SchemeExpression::getOperator($this->expression, $this->index);
         
+        SchemeParser::$context->createDebugLog("found operator: ".$this->operator);
+
         SchemeExpression::getArgs($this->expression, $this->index, $this->rawArgs);
+        
+        SchemeParser::$context->createDebugLog("found arguments: ".var_export($this->rawArgs, true));
+
+        SchemeParser::$context->createDebugLog("parsing found arguments");
         SchemeExpression::parseArgs($this->rawArgs, $this->args);
 
         $this->hasBeenBuild = true;
+        SchemeParser::$context->createDebugLog("expression built");
         SchemeParser::$context->popCallstackLog();
     }
 
     public function evaluate() : SchemeTerm
     {
         SchemeParser::$context->addLogToCallstack($this->input);
+        SchemeParser::$context->createDebugLog("Evaluating expression: ".$this->input, true);
 
         if($this->hasBeenBuild == false)
         {

@@ -28,6 +28,7 @@ final class SchemeParser
 
     public bool $returnErrors;
     public bool $returnCallstack;
+    public bool $printDebug;
 
     protected array $callstack = array();
 
@@ -37,12 +38,14 @@ final class SchemeParser
 
     protected array $operations = array();
 
-    public function __construct(string $input, bool $returnErrors = true, bool $returnCallstack = true)
+    public function __construct(string $input, bool $returnErrors = true, bool $returnCallstack = false, bool $printDebug = false)
     {
         $this->input = $input;
         $this->returnErrors = $returnErrors;
         $this->returnCallstack = $returnCallstack;
+        $this->printDebug = $printDebug;
 
+        $this->createDebugLog("Registering available Scheme operations", true);
         $this->registerOperations();
     }
 
@@ -56,9 +59,13 @@ final class SchemeParser
     {
         SchemeParser::$context = $this;
 
+        $this->createDebugLog("Parsing entire input", true);
+
         try
         {
             $this->extractExpressions();
+
+            $this->createDebugLog("Building found expressions", true);
 
             foreach($this->parsedExpressions as $ex)
             {
@@ -104,8 +111,8 @@ final class SchemeParser
             }
             catch (Exception $ex)
             {
-                $evaluation = $evaluation."\n\n".$this->createErrorLog(
-                    "Scheme error",
+                $evaluation = $evaluation.$this->createErrorLog(
+                    "\nScheme error",
                     "Evaluation",
                     $ex->getMessage()
                 );
@@ -128,6 +135,8 @@ final class SchemeParser
         $index = 0;
         $char = '';
         $tempstr = "";
+        
+        $this->createDebugLog("extracting expressions from: ".$this->input);
 
         while($index < strlen($this->input))
         {
@@ -160,6 +169,8 @@ final class SchemeParser
         {
             array_push($this->parsedExpressions, $tempstr);
         }
+
+        $this->createDebugLog("found expressions: ".var_export($this->parsedExpressions, true));
     }
 
     /**
@@ -179,6 +190,8 @@ final class SchemeParser
             $op->checkSettings();
             array_push($this->operations, $op);
         }
+
+        $this->createDebugLog("successfully registered Scheme operations");
     }
 
     /**
@@ -191,6 +204,8 @@ final class SchemeParser
      */
     protected function gatherClasses(array &$output) : void
     {
+        $this->createDebugLog("gather subclasses of class \"SchemeOperation\" using reflection");
+
         foreach(get_declared_classes() as $class)
         {
             if(is_subclass_of($class, __NAMESPACE__."\\Operation\\SchemeOperation"))
@@ -198,6 +213,8 @@ final class SchemeParser
                 array_push($output, $class);
             }
         }
+
+        $this->createDebugLog("found classes: ".var_export($output, true));
     }
 
     /**
@@ -281,7 +298,43 @@ final class SchemeParser
             }
         }
 
-        return "<error>".$log."</error>\n";
+        return "<error>".$log."</error>";
+    }
+
+    /**
+     * Create a debug log. Will print log in direct if parameter $printDebug is true.
+     * 
+     * @param string $content log content
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function createDebugLog(string $content, bool $isSection = false, bool $returns = false) : void
+    {
+        if(!$this->printDebug)
+        {
+            return;
+        }
+
+        $logtype = $isSection ? "question" : "comment";
+        $indicator = $isSection ? "" : "-> ";
+
+        $indentation = "";
+        foreach($this->callstack as $_)
+        {
+            $idx = 0;
+            while($idx < 4)
+            {
+                $indentation = $indentation."-";
+                $idx++;
+            }
+            $indentation = $indentation."|";
+        }
+
+        $content = preg_replace("/\r|\n/", "\n"."</".$logtype.">".$indentation."<".$logtype.">", $content);
+
+        $log = $indentation."<".$logtype.">".$indicator.$content."</".$logtype.">";
+        array_push($this->parsedTerms, new SchemeTerm($log, SchemeArgType::STRING));
     }
 }
 ?>
