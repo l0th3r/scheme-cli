@@ -1,6 +1,9 @@
 <?php
 namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
+use Ksr\SchemeCli\Tools\Scheme\LogType;
+use Ksr\SchemeCli\Tools\Scheme\SchemeParser;
+
 /**
  * Define a scheme term which is also a evaluable scheme element
  *
@@ -24,9 +27,18 @@ class SchemeTerm extends SchemeEvaluable
         $this->type = $type;
     }
 
-    public function build() : void {}
+    public function build() : void
+    {
+        SchemeParser::$context->createDebugLog("building term: ".$this->input);
+    }
 
     public function evaluate() : SchemeTerm
+    {
+        SchemeParser::$context->createDebugLog("evaluating term: ".$this->input);
+        return $this;
+    }
+
+    public function getEvaluation() : SchemeTerm
     {
         return $this;
     }

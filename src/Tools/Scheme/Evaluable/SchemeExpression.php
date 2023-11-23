@@ -2,6 +2,7 @@
 namespace Ksr\SchemeCli\Tools\Scheme\Evaluable;
 
 use Exception;
+use Ksr\SchemeCli\Tools\Scheme\LogType;
 use Ksr\SchemeCli\Tools\Scheme\SchemeParser;
 
 /**
@@ -31,16 +32,20 @@ class SchemeExpression extends SchemeEvaluable
     public function build() : void
     {
         SchemeParser::$context->addLogToCallstack($this->input);
-        SchemeParser::$context->createDebugLog("Building expression: ".$this->input, true);
+        SchemeParser::$context->createDebugLog("Building expression: ".$this->input, LogType::SECTION);
 
         $this->index = 0;
         $this->expression = SchemeExpression::getExpressionFromIndex($this->input, $this->index);
-        $this->operator = SchemeExpression::getOperator($this->expression, $this->index);
         
+        if(strlen($this->expression) < 3)
+        {
+            throw new Exception("expression is not valid: ".$this->expression);
+        }
+        
+        $this->operator = SchemeExpression::getOperator($this->expression, $this->index);
         SchemeParser::$context->createDebugLog("found operator: ".$this->operator);
 
         SchemeExpression::getArgs($this->expression, $this->index, $this->rawArgs);
-        
         SchemeParser::$context->createDebugLog("found arguments: ".var_export($this->rawArgs, true));
 
         SchemeParser::$context->createDebugLog("parsing found arguments");
@@ -54,8 +59,40 @@ class SchemeExpression extends SchemeEvaluable
     public function evaluate() : SchemeTerm
     {
         SchemeParser::$context->addLogToCallstack($this->input);
-        SchemeParser::$context->createDebugLog("Evaluating expression: ".$this->input, true);
+        SchemeParser::$context->createDebugLog("Evaluating expression: ".$this->input, LogType::SECTION);
 
+        if($this->hasBeenBuild == false)
+        {
+            throw new Exception("Cannot evaluate unbuild expression");
+        }
+
+        SchemeParser::$context->createDebugLog("recovering operation with identifier: ".$this->operator);
+        if(SchemeParser::$context->tryGetOperation($this->operator, $operation))
+        {
+            $evaluatedArgs = array();
+
+            foreach($this->args as $arg)
+            {
+                $argEval = $arg->evaluate();
+                array_push($evaluatedArgs, $argEval);
+            }
+
+            SchemeParser::$context->createDebugLog("operate evaluation");
+            $evaluation = $operation->operateEval($evaluatedArgs, true);
+            SchemeParser::$context->createDebugLog("evaluation resulted of: ".$evaluation->input);
+            
+            SchemeParser::$context->popCallstackLog();
+
+            return $evaluation;
+        }
+        else
+        {
+            throw new Exception("Unknown identifier: ".$this->operator);
+        }
+    }
+
+    public function getEvaluation(): SchemeTerm
+    {
         if($this->hasBeenBuild == false)
         {
             throw new Exception("Cannot evaluate unbuild expression");
