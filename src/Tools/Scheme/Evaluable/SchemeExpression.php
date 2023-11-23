@@ -41,6 +41,8 @@ class SchemeExpression extends SchemeEvaluable
 
         $this->hasBeenBuild = true;
         SchemeParser::$context->popCallstackLog();
+
+        var_dump($this->operator);
     }
 
     public function evaluate() : SchemeTerm
@@ -160,14 +162,19 @@ class SchemeExpression extends SchemeEvaluable
         $index = 1;
         $operator = "";
 
+        while(!ctype_graph($expression[$index]) && $index < strlen($expression))
+        {
+            $index++;
+        }
+
+        $c = '';
+
         do
         {
-            $c = $expression[$index++];
+            $c = $expression[$index];
             $operator = $operator.$c;
-        }
-        while(ctype_alpha($c) && $index < strlen($expression));
-
-        //TODO FIX SPACE BEFORE OPERATOR
+            $index++;
+        } while(ctype_graph($expression[$index]) && $expression[$index] != ')' && $index < strlen($expression));
 
         return $operator;
     }
