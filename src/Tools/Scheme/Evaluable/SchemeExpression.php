@@ -30,6 +30,8 @@ class SchemeExpression extends SchemeEvaluable
 
     public function build() : void
     {
+        SchemeParser::$context->addLogToCallstack($this->input);
+
         $this->index = 0;
         $this->expression = SchemeExpression::getExpressionFromIndex($this->input, $this->index);
         $this->operator = SchemeExpression::getOperator($this->expression, $this->index);
@@ -38,10 +40,13 @@ class SchemeExpression extends SchemeEvaluable
         SchemeExpression::parseArgs($this->rawArgs, $this->args);
 
         $this->hasBeenBuild = true;
+        SchemeParser::$context->popCallstackLog();
     }
 
     public function evaluate() : SchemeTerm
     {
+        SchemeParser::$context->addLogToCallstack($this->input);
+
         if($this->hasBeenBuild == false)
         {
             throw new Exception("Cannot evaluate unbuild expression");
@@ -57,7 +62,11 @@ class SchemeExpression extends SchemeEvaluable
                 array_push($evaluatedArgs, $argEval);
             }
 
-            return $operation->operateEval($evaluatedArgs, true);
+            $evaluation = $operation->operateEval($evaluatedArgs, true);
+            
+            SchemeParser::$context->popCallstackLog();
+
+            return $evaluation;
         }
         else
         {

@@ -26,11 +26,13 @@ final class SchemeParser
     public bool $returnErrors;
     public bool $returnCallstack;
 
+    protected array $callstack = array();
+
     protected array $parsedExpressions = array();
     protected array $parsedTerms = array();
     protected array $evaluatedExpressions = array();
+
     protected array $operations = array();
-    protected bool $hasBeenParsed = false;
 
     public function __construct(string $input, bool $returnErrors = true, bool $returnCallstack = true)
     {
@@ -212,7 +214,39 @@ final class SchemeParser
         return $hasFoundOperation;
     }
 
+    /**
+     * Add a log to the callstack
+     * 
+     * @param string $log the log to add
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function addLogToCallstack(string $log) : void
+    {
+        array_push($this->callstack, $log);
+    }
 
+    /**
+     * Remove the last added log to the callstack
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function popCallstackLog() : void
+    {
+        array_pop($this->callstack);
+    }
+
+    /**
+     * Add a log to the callstack
+     * 
+     * @param string $prefix indication on the type of error
+     * @param string $err content of the error log
+     * 
+     * @return string formatted error log
+     * @author Ksr
+     */
     protected function formErrorLog(string $prefix, string $err) : string
     {
         if($this->returnErrors == false)
@@ -220,12 +254,19 @@ final class SchemeParser
             return "";
         }
 
-        $log = $prefix." -> ".$err;
+        $log = $prefix.": ".$err;
 
         if($this->returnCallstack)
         {
-            $log = $log."\n----- Stack -----";
-            // TODO add callstack
+            $log = $log."\n----- Parsing Stack -----";
+            
+            $idx = count($this->callstack) - 1;
+            
+            while($idx >= 0)
+            {
+                $log = $log."\n".($idx + 1).": ".$this->callstack[$idx];
+                $idx--;
+            }
         }
 
         return "<error>".$log."</error>";
