@@ -41,8 +41,6 @@ class SchemeExpression extends SchemeEvaluable
 
         $this->hasBeenBuild = true;
         SchemeParser::$context->popCallstackLog();
-
-        var_dump($this->operator);
     }
 
     public function evaluate() : SchemeTerm
