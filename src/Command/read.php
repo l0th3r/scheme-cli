@@ -13,17 +13,34 @@ class Read extends Command
     protected function configure()
     {
         $this->setName("read");
-        $this->setDescription("Read scheme language declaration and print errors and interpretation result. Use 'verbose' option to print more details.");
-        $this->setHelp("Use double quotes to write a space-separated declaration.\nExemple: \"(+ 5 10) (* 5 2)\" as declaration will output:\n15\n10");
+        $this->setDescription("Read scheme language declarations from a file and print errors and interpretation result. Use 'verbose' (-v | -vv | -vvv) option to print more details.");
 
-        $this->addArgument("declaration", InputArgument::REQUIRED, "Scheme declaration to execute");
+        $this->addArgument("filepath", InputArgument::REQUIRED, "Source file to read");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $declaration = $input->getArgument('declaration');
+        $path = $input->getArgument('filepath');
 
-        $parser = new SchemeParser($declaration, $output);
+        if(file_exists($path) == false)
+        {
+            $output->writeln("<error>File could not be found at path: ".$path."</error>");
+            return Command::FAILURE;
+        }
+
+        $file = fopen($path, "r");
+        $size = filesize($path);
+
+        if($size <= 0)
+        {
+            fclose($file);
+            return Command::SUCCESS;
+        }
+
+        $content = fread($file, $size);
+        fclose($file);
+
+        $parser = new SchemeParser($content, $output);
         $parser->parse();
         $parser->evaluate();
         
