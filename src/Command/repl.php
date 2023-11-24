@@ -23,6 +23,12 @@ class Repl extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        if($input->getOption("no-interaction"))
+        {
+            $output->writeln("<error>Cannot use this command without interactions</error>");
+            return Command::FAILURE;
+        }
+
         $helper = $this->getHelper("question");
 
         $repl = -1;
