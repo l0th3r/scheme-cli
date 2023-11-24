@@ -25,7 +25,8 @@ class Repl extends Command
     {
         if($input->getOption("no-interaction"))
         {
-            $output->writeln("<error>Cannot use this command with the -n option </error>");
+            $output->writeln("<error>Cannot use this command without interactions</error>");
+            return Command::FAILURE;
         }
 
         $helper = $this->getHelper("question");
