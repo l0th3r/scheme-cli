@@ -38,4 +38,3 @@ class SchemeAdd extends SchemeOperation
     }
 }
 ?>
-
