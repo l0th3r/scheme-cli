@@ -7,6 +7,8 @@ use Ksr\SchemeCli\Tools\Scheme\Operation\SchemeOperation;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeExpression;
 use Ksr\SchemeCli\Tools\Scheme\Evaluable\SchemeTerm;
 
+use Symfony\Component\Console\Output\OutputInterface;
+
 // TODO FIX THE NEED TO REQUIRE TO SEARCH AMONG CLASSES
 require_once __DIR__.'/Operation/SchemeAdd.php';
 require_once __DIR__.'/Operation/SchemeMultiply.php';
@@ -23,12 +25,12 @@ require_once __DIR__.'/Operation/SchemeModulo.php';
  */
 final class SchemeParser
 {
-    public string $input;
     public static SchemeParser $context;
+    
+    public bool $hasParsed = false;
 
-    public bool $returnErrors;
-    public bool $returnCallstack;
-
+    protected string $input;
+    protected OutputInterface $output;
     protected array $callstack = array();
 
     protected array $parsedExpressions = array();
@@ -37,28 +39,32 @@ final class SchemeParser
 
     protected array $operations = array();
 
-    public function __construct(string $input, bool $returnErrors = true, bool $returnCallstack = true)
+    public function __construct(string $input, ?OutputInterface $output = NULL)
     {
         $this->input = $input;
-        $this->returnErrors = $returnErrors;
-        $this->returnCallstack = $returnCallstack;
+        $this->output = $output;
 
+        $this->createDebugLog("Registering available Scheme operations", LogType::SECTION);
         $this->registerOperations();
     }
 
     /**
      * Parse the input and check integrity of scheme expressions
      * 
-     * @return string parsing and evaluation result
+     * @return void
      * @author Ksr
      */
-    public function parse() : string
+    public function parse() : void
     {
         SchemeParser::$context = $this;
+
+        $this->createDebugLog("Start recursive parsing", LogType::SECTION);
 
         try
         {
             $this->extractExpressions();
+
+            $this->createDebugLog("Building found expressions", LogType::SECTION);
 
             foreach($this->parsedExpressions as $ex)
             {
@@ -70,27 +76,66 @@ final class SchemeParser
         }
         catch (Exception $ex)
         {
-            $log = new SchemeTerm(
-                $this->createErrorLog("Scheme parsing error", "Parsing", $ex->getMessage()),
-                SchemeArgType::STRING
-            );
-            
-            array_push($this->parsedTerms, $log);
+            $this->createErrorLog("Scheme parsing error", "Parsing", $ex->getMessage());
+            $this->popCallstackLog();
         }
 
-        return $this->evaluate();
+        $this->popCallstackLog();
+
+        $this->createDebugLog("parsing done");
+        $this->hasParsed = true;
     }
 
     /**
-     * Recursively evaluate the parsed input
+     * Recursively evaluate the parsed input and print the result in $output
+     * 
+     * @throws Exception when an evaluation error is met
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function evaluate() : void
+    {
+        if($this->hasParsed == false)
+        {
+            throw new Exception("cannot evaluate without parsing first");
+        }
+
+        SchemeParser::$context = $this;
+        $this->createDebugLog("Start recursive evaluation", LogType::SECTION);
+
+        foreach($this->parsedTerms as $term)
+        {
+            try
+            {
+                $termEval = $term->evaluate();
+                $this->createDebugLog($termEval, LogType::RESULT);
+            }
+            catch (Exception $ex)
+            {
+                $this->createErrorLog("Scheme error", "Evaluation", $ex->getMessage());
+                $this->popCallstackLog();
+            }
+
+            $this->popCallstackLog();
+        }
+    }
+
+    /**
+     * Recursively evaluate the parsed input and return the result
      * 
      * @throws Exception when an evaluation error is met
      * 
      * @return string evaluation result
      * @author Ksr
      */
-    protected function evaluate() : string
+    public function getEvaluation() : string
     {
+        if($this->hasParsed == false)
+        {
+            throw new Exception("cannot evaluate without parsing first");
+        }
+
         SchemeParser::$context = $this;
 
         $evaluation = "";
@@ -104,11 +149,7 @@ final class SchemeParser
             }
             catch (Exception $ex)
             {
-                $evaluation = $evaluation."\n\n".$this->createErrorLog(
-                    "Scheme error",
-                    "Evaluation",
-                    $ex->getMessage()
-                );
+                $this->createErrorLog("\nScheme error", "Evaluation", $ex->getMessage());
             }
         }
 
@@ -128,6 +169,8 @@ final class SchemeParser
         $index = 0;
         $char = '';
         $tempstr = "";
+        
+        $this->createDebugLog("extracting expressions from: ".$this->input);
 
         while($index < strlen($this->input))
         {
@@ -160,6 +203,8 @@ final class SchemeParser
         {
             array_push($this->parsedExpressions, $tempstr);
         }
+
+        $this->createDebugLog("found expressions: ".var_export($this->parsedExpressions, true));
     }
 
     /**
@@ -179,6 +224,8 @@ final class SchemeParser
             $op->checkSettings();
             array_push($this->operations, $op);
         }
+
+        $this->createDebugLog("successfully registered Scheme operations");
     }
 
     /**
@@ -191,6 +238,8 @@ final class SchemeParser
      */
     protected function gatherClasses(array &$output) : void
     {
+        $this->createDebugLog("gather subclasses of class \"SchemeOperation\" using reflection");
+
         foreach(get_declared_classes() as $class)
         {
             if(is_subclass_of($class, __NAMESPACE__."\\Operation\\SchemeOperation"))
@@ -198,6 +247,8 @@ final class SchemeParser
                 array_push($output, $class);
             }
         }
+
+        $this->createDebugLog("found classes: ".var_export($output, true));
     }
 
     /**
@@ -256,19 +307,14 @@ final class SchemeParser
      * @param string $stackName name of the stack
      * @param string $err content of the error log
      * 
-     * @return string formatted error log
+     * @return void
      * @author Ksr
      */
-    protected function createErrorLog(string $prefix, string $stackName, string $err) : string
+    protected function createErrorLog(string $prefix, string $stackName, string $err) : void
     {
-        if($this->returnErrors == false)
-        {
-            return "";
-        }
-
         $log = $prefix.": ".$err;
 
-        if($this->returnCallstack)
+        if($this->output->isVerbose() && count($this->callstack) > 0)
         {
             $log = $log."\n----- ".$stackName." Stack -----";
             
@@ -281,7 +327,72 @@ final class SchemeParser
             }
         }
 
-        return "<error>".$log."</error>\n";
+        $this->output->writeln("\n<error>".$log."</error> \n");
     }
+
+    /**
+     * Create a debug log. Will print log in direct if parameter $printDebug is true.
+     * 
+     * @param string $content log content
+     * 
+     * @return void
+     * @author Ksr
+     */
+    public function createDebugLog(string $content, LogType $type = LogType::INFO) : void
+    {
+        $logtype = "";
+        $indicator = "";
+
+        $shouldPrint = false;
+
+        switch($type)
+        {
+            case LogType::INFO:
+                $logtype = "comment";
+                $indicator = "-> ";
+                $shouldPrint = ($this->output->isDebug());
+                break;
+            case LogType::SECTION:
+                $logtype = "question";
+                $shouldPrint = ($this->output->isDebug());
+                break;
+            case LogType::RESULT:
+                $logtype = "info";
+                $shouldPrint = true;
+                if ($this->output->isVerbose()) $indicator = "> ";
+            default:
+                break;
+        }
+
+        if($shouldPrint == false)
+        {
+            return;
+        }
+
+        $indentation = "";
+        foreach($this->callstack as $_)
+        {
+            $idx = 0;
+            while($idx < 4)
+            {
+                $indentation = $indentation." ";
+                $idx++;
+            }
+            $indentation = $indentation."|";
+        }
+
+        $content = preg_replace("/\r|\n/", "\n"."</".$logtype.">".$indentation."<".$logtype.">", $content);
+
+        $log = $indentation."<".$logtype.">".$indicator.$content."</".$logtype.">";
+        
+        $this->output->writeln($log);
+    }
+}
+
+enum LogType : int
+{
+    case INFO = 0;
+    case SECTION = 1;
+    case RESULT = 2;
 }
 ?>

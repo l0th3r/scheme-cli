@@ -31,6 +31,16 @@ abstract class SchemeEvaluable
     public abstract function evaluate() : SchemeTerm;
 
     /**
+     * Recursively evaluate result of scheme expression or term (will not generate logs)
+     * 
+     * @throws Exception if used before scheme expression building
+     * @author ksr
+     * @return string result of the evaluation
+     */ 
+    public abstract function getEvaluation() : SchemeTerm;
+
+
+    /**
      * Recursively get scheme expression or term
      * 
      * @throws Exception if used before expression building
