@@ -77,7 +77,10 @@ final class SchemeParser
         catch (Exception $ex)
         {
             $this->createErrorLog("Scheme parsing error", "Parsing", $ex->getMessage());
+            $this->popCallstackLog();
         }
+
+        $this->popCallstackLog();
 
         $this->createDebugLog("parsing done");
         $this->hasParsed = true;
@@ -113,6 +116,8 @@ final class SchemeParser
                 $this->createErrorLog("Scheme error", "Evaluation", $ex->getMessage());
                 $this->popCallstackLog();
             }
+
+            $this->popCallstackLog();
         }
     }
 
@@ -353,8 +358,8 @@ final class SchemeParser
                 break;
             case LogType::RESULT:
                 $logtype = "info";
-                $indicator = "> ";
                 $shouldPrint = true;
+                if ($this->output->isVerbose()) $indicator = "> ";
             default:
                 break;
         }

@@ -52,8 +52,8 @@ class SchemeExpression extends SchemeEvaluable
         SchemeExpression::parseArgs($this->rawArgs, $this->args);
 
         $this->hasBeenBuild = true;
-        SchemeParser::$context->createDebugLog("expression built");
         SchemeParser::$context->popCallstackLog();
+        SchemeParser::$context->createDebugLog("expression built");
     }
 
     public function evaluate() : SchemeTerm
