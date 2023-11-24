@@ -8,12 +8,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
-class Read extends Command
+class Interpret extends Command
 {
     protected function configure()
     {
-        $this->setName("read");
-        $this->setDescription("Read scheme language declaration and print errors and interpretation result. Use 'verbose' option to print more details.");
+        $this->setName("interpret");
+        $this->setDescription("Read scheme language declaration and print errors and interpretation result. Use 'verbose' (-v | -vv | -vvv) option to print more details.");
         $this->setHelp("Use double quotes to write a space-separated declaration.\nExemple: \"(+ 5 10) (* 5 2)\" as declaration will output:\n15\n10");
 
         $this->addArgument("declaration", InputArgument::REQUIRED, "Scheme declaration to execute");

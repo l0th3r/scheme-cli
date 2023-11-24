@@ -1,2 +1,2 @@
 Ksr\SchemeCli\Command
-read
+interpret
